@@ -1,4 +1,6 @@
-﻿var lines = await File.ReadAllLinesAsync("input.txt");
+﻿using System.Collections.Frozen;
+
+var lines = await File.ReadAllLinesAsync("input.txt");
 
 var locationIds = lines
     .Select(ParseLine)
@@ -23,7 +25,29 @@ for ( var i = 0; i < locationIds.Length; i++ )
 
 Console.WriteLine($"Day 1 - Puzzle 1: {puzzle1}");
 
-(int left, int right) ParseLine(
+var rightFrequencies = right
+    .GroupBy(id => id)
+    .ToFrozenDictionary(
+        g => g.Key,
+        g => g.Count());
+
+var puzzle2 = 0;
+
+for ( var i = 0; i < locationIds.Length; i++ )
+{
+    if ( !rightFrequencies.TryGetValue(
+            left[i],
+            out var frequency) )
+    {
+        continue;
+    }
+
+    puzzle2 += left[i] * frequency;
+}
+
+Console.WriteLine($"Day 1 - Puzzle 2: {puzzle2}");
+
+static (int left, int right) ParseLine(
     string line)
 {
     var parts = line
